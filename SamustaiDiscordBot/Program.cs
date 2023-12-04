@@ -56,7 +56,10 @@ namespace SamustaiDiscordBot
         private static void Main(string[] args)
         {
             var fileDownloader = new FileDownloader();
-    
+            var linkToDownload = "https://drive.google.com/file/d/1e48SnRiRDn8HIVPuf_DTOO3HGPz8rM-L/view?usp=sharing";
+            var filename = fileDownloader.GetFileName(linkToDownload);
+            var filePath = fileDownloader.CrateFileWithPath( @"C:\Users\blackmercy\Downloads", filename);
+            
             fileDownloader.DownloadProgressChanged += ( sender, e ) => Console.WriteLine( "Progress changed " + e.BytesReceived + " " + e.TotalBytesToReceive );
         
             fileDownloader.DownloadFileCompleted += ( sender, e ) =>
@@ -68,13 +71,10 @@ namespace SamustaiDiscordBot
                 else
                     Console.WriteLine( "Download completed" );
             };
-
-            var linkToDownload = "https://drive.google.com/file/d/1e48SnRiRDn8HIVPuf_DTOO3HGPz8rM-L/view?usp=sharing";
-            var filename = fileDownloader.GetFileName(linkToDownload);
-            var filePath = fileDownloader.CrateFileWithPath("/Users/black_mercy/Downloads", filename);
+            
             fileDownloader.DownloadFileAsync( 
                 "https://drive.google.com/file/d/1e48SnRiRDn8HIVPuf_DTOO3HGPz8rM-L/view?usp=sharing",
-                filePath );
+                @"C:\Users\blackmercy\Videos\Choice Of Life Middle Ages 2\Choice Of Life Middle Ages 2 2023.10.20 - 12.39.55.01" );
 
             Console.ReadLine();
         }

@@ -164,7 +164,7 @@ namespace SamustaiDiscordBot
 
         public string CrateFileWithPath(string downloadFilePath, string fileName)
         {
-            var createdPath = downloadFilePath + '/' + fileName;
+            var createdPath = downloadFilePath + '\\' + fileName;
             var fileReader = File.Create(createdPath);
             fileReader.Dispose();
             return createdPath;
