@@ -14,7 +14,8 @@ namespace SamustaiDiscordBot
         
         private DiscordSocketClient _client;
         private FileDownloaderBootstraper _fileDownloader;
-        private string _token = "MTE4MDIwNzkxNzg4MjkzMzMwOA.GrWS6Z.Mg-J5gBxCwwTI-QpCuAaeZ7Yt3PnT5oKJldgCg";
+        private string _token = "MTE4MDIwNzkxNzg4MjkzMzMwOA.G1pwYb.7p4iXp4QAMuiUEx5JlOHuNyqRObJXUZW2MoHxw";
+        private string _downloadPath = "C:\\Users\\Samustai-PC\\Downloads";
     
         private async Task MainAsync()
         {
@@ -41,7 +42,7 @@ namespace SamustaiDiscordBot
             if (messageParam.Author.IsBot)
                 return Task.CompletedTask;
            
-            _fileDownloader.DownloadFile(ExtractLink(messageParam.Content));
+            _fileDownloader.DownloadFile(ExtractLink(messageParam.Content), _downloadPath);
             messageParam.Channel.SendMessageAsync("Downloading");
 
             return Task.CompletedTask;
@@ -58,11 +59,11 @@ namespace SamustaiDiscordBot
 
     public class FileDownloaderBootstraper
     {
-        public void DownloadFile(string linkToDownload)
+        public void DownloadFile(string linkToDownload, string downloadPath)
         {
             var fileDownloader = new FileDownloader();
             var filename = fileDownloader.GetFileName(linkToDownload);
-            var filePath = fileDownloader.CrateFileWithPath( @"/Users/black_mercy/Downloads", filename);
+            var filePath = fileDownloader.CrateFileWithPath( @downloadPath, filename);
             
             fileDownloader.DownloadProgressChanged += ( sender, e ) => Console.WriteLine( "Progress changed " + e.BytesReceived + " " + e.TotalBytesToReceive );
         
