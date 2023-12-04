@@ -22,7 +22,7 @@ namespace SamustaiDiscordBot
     //         _client.MessageReceived += HandleCommandAsync;
     //         _client.Log += Log; 
     //         
-    //         var token = "MTE4MDIwNzkxNzg4MjkzMzMwOA.G027oy.mtABZJxqUuF18GdOzsUK_C_wycF0sSxAU1ODlk";
+    //         var token = "/MTE4MDIwNzkxNzg4MjkzMzMwOA.G027oy.mtABZJxqUuF18GdOzsUK_C_wycF0sSxAU1ODlk";
     //
     //         await _client.LoginAsync(TokenType.Bot, token);
     //         await _client.StartAsync();
@@ -68,10 +68,13 @@ namespace SamustaiDiscordBot
                 else
                     Console.WriteLine( "Download completed" );
             };
-        
+
+            var linkToDownload = "https://drive.google.com/file/d/1e48SnRiRDn8HIVPuf_DTOO3HGPz8rM-L/view?usp=sharing";
+            var filename = fileDownloader.GetFileName(linkToDownload);
+            var filePath = fileDownloader.CrateFileWithPath("/Users/black_mercy/Downloads", filename);
             fileDownloader.DownloadFileAsync( 
                 "https://drive.google.com/file/d/1e48SnRiRDn8HIVPuf_DTOO3HGPz8rM-L/view?usp=sharing",
-                @"C:\Users\blackmercy\Videos\Choice Of Life Middle Ages 2\Choice Of Life Middle Ages 2 2023.10.20 - 12.39.55.01.mp4" );
+                filePath );
 
             Console.ReadLine();
         }

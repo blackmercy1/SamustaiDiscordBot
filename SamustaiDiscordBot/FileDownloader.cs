@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.SymbolStore;
 using System.IO;
 using System.Net;
+using System.Runtime.Loader;
 using System.Text;
 
 namespace SamustaiDiscordBot
@@ -150,14 +152,46 @@ namespace SamustaiDiscordBot
             downloadProgress = new DownloadProgress();
         }
 
-        public void DownloadFile( string address, string fileName )
+        public void DownloadFile(string address, string fileName )
         {
             DownloadFile( address, fileName, false, null );
         }
 
-        public void DownloadFileAsync( string address, string fileName, object userToken = null )
+        public void DownloadFileAsync(string address, string downloadFilePath, object userToken = null )
         {
-            DownloadFile( address, fileName, true, userToken );
+            DownloadFile( address, downloadFilePath, true, userToken );
+        }
+
+        public string CrateFileWithPath(string downloadFilePath, string fileName)
+        {
+            var createdPath = downloadFilePath + '/' + fileName;
+            var fileReader = File.Create(createdPath);
+            fileReader.Dispose();
+            return createdPath;
+        }
+
+        public string GetFileName(string address)
+        {
+            var htmlCode = webClient.DownloadString(address);
+            var titlePattern = "window.viewerData = {config: {'id': '1e48SnRiRDn8HIVPuf_DTOO3HGPz8rM-L', 'title': '";
+            var index = htmlCode.IndexOf(titlePattern, StringComparison.Ordinal);
+            index += titlePattern.Length;
+                
+            var startIndex = index;
+            int endIndex;
+            while (true)
+            {
+                index++;
+                var symbol = htmlCode[index];
+                if (symbol == '\'')
+                {
+                    endIndex = index;
+                    break;
+                }
+            }
+                
+            var googleTitle = htmlCode.Substring(startIndex, endIndex-startIndex);
+            return googleTitle;
         }
 
         private void DownloadFile( string address, string fileName, bool asyncDownload, object userToken )
@@ -195,9 +229,9 @@ namespace SamustaiDiscordBot
                 DownloadFileCompletedCallback( webClient, new AsyncCompletedEventArgs( null, false, null ) );
             }
             else if( userToken == null )
-                webClient.DownloadFileAsync( downloadAddress, downloadPath );
+                webClient.DownloadFileAsync(downloadAddress, downloadPath);
             else
-                webClient.DownloadFileAsync( downloadAddress, downloadPath, userToken );
+                webClient.DownloadFileAsync(downloadAddress, downloadPath, userToken);
         }
 
         private void DownloadProgressChangedCallback( object sender, DownloadProgressChangedEventArgs e )
