@@ -7,39 +7,73 @@ using Discord.WebSocket;
 
 namespace SamustaiDiscordBot
 {
+    // public class Program
+    // {
+    //     private static void Main() => new Program().MainAsync().GetAwaiter().GetResult();
+    //
+    //     
+    //     private DiscordSocketClient _client;
+    //
+    //     public async Task MainAsync()
+    //     {
+    //         _client = new DiscordSocketClient();
+    //         WorkWithFile();
+    //         
+    //         _client.MessageReceived += HandleCommandAsync;
+    //         _client.Log += Log; 
+    //         
+    //         var token = "MTE4MDIwNzkxNzg4MjkzMzMwOA.G027oy.mtABZJxqUuF18GdOzsUK_C_wycF0sSxAU1ODlk";
+    //
+    //         await _client.LoginAsync(TokenType.Bot, token);
+    //         await _client.StartAsync();
+    //         
+    //         await Task.Delay(-1);
+    //     }
+    //
+    //     private void WorkWithFile()
+    //     {
+    //         var credentialsPath =
+    //             "Credentials.json";
+    //     }
+    //
+    //     private Task Log(LogMessage arg)
+    //     {
+    //         Console.WriteLine(arg);
+    //         return Task.CompletedTask;
+    //     }
+    //
+    //     private Task HandleCommandAsync(SocketMessage messageParam)
+    //     {
+    //         if (messageParam.Author.IsBot)
+    //             return Task.CompletedTask;
+    //         messageParam.Channel.SendMessageAsync(messageParam.Content);
+    //         return Task.CompletedTask;
+    //     }
+    // }
+
     public class Program
     {
-        private static void Main() => new Program().MainAsync().GetAwaiter().GetResult();
-
-        private DiscordSocketClient _client;
-
-        public async Task MainAsync()
+        private static void Main(string[] args)
         {
-            _client = new DiscordSocketClient();
-            
-            _client.MessageReceived += HandleCommandAsync;
-            _client.Log += Log; 
-            
-            var token = "MTE4MDIwNzkxNzg4MjkzMzMwOA.G0G7xS.VnKewgrBahWVPB1UjxFfqoAhN-uTRnaqe2ItIY";
+            var fileDownloader = new FileDownloader();
+    
+            fileDownloader.DownloadProgressChanged += ( sender, e ) => Console.WriteLine( "Progress changed " + e.BytesReceived + " " + e.TotalBytesToReceive );
+        
+            fileDownloader.DownloadFileCompleted += ( sender, e ) =>
+            {
+                if( e.Cancelled )
+                    Console.WriteLine( "Download cancelled" );
+                else if( e.Error != null )
+                    Console.WriteLine( "Download failed: " + e.Error );
+                else
+                    Console.WriteLine( "Download completed" );
+            };
+        
+            fileDownloader.DownloadFileAsync( 
+                "https://drive.google.com/file/d/1e48SnRiRDn8HIVPuf_DTOO3HGPz8rM-L/view?usp=sharing",
+                @"C:\Users\blackmercy\Videos\Choice Of Life Middle Ages 2\Choice Of Life Middle Ages 2 2023.10.20 - 12.39.55.01.mp4" );
 
-            await _client.LoginAsync(TokenType.Bot, token);
-            await _client.StartAsync();
-            
-            await Task.Delay(-1);
-        }
-
-        private Task Log(LogMessage arg)
-        {
-            Console.WriteLine(arg);
-            return Task.CompletedTask;
-        }
-
-        private Task HandleCommandAsync(SocketMessage messageParam)
-        {
-            if (messageParam.Author.IsBot)
-                return Task.CompletedTask;
-            messageParam.Channel.SendMessageAsync(messageParam.Content);
-            return Task.CompletedTask;
+            Console.ReadLine();
         }
     }
 }
