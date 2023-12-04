@@ -172,8 +172,10 @@ namespace SamustaiDiscordBot
 
         public string GetFileName(string address)
         {
-            var htmlCode = webClient.DownloadString(address);
+            var linkWebClient = new WebClient();
+            var htmlCode = linkWebClient.DownloadString(address);
             var titlePattern = "window.viewerData = {config: {'id': '1e48SnRiRDn8HIVPuf_DTOO3HGPz8rM-L', 'title': '";
+            linkWebClient.Dispose();
             var index = htmlCode.IndexOf(titlePattern, StringComparison.Ordinal);
             index += titlePattern.Length;
                 

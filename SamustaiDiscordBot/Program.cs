@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -7,58 +8,61 @@ using Discord.WebSocket;
 
 namespace SamustaiDiscordBot
 {
-    // public class Program
-    // {
-    //     private static void Main() => new Program().MainAsync().GetAwaiter().GetResult();
-    //
-    //     
-    //     private DiscordSocketClient _client;
-    //
-    //     public async Task MainAsync()
-    //     {
-    //         _client = new DiscordSocketClient();
-    //         WorkWithFile();
-    //         
-    //         _client.MessageReceived += HandleCommandAsync;
-    //         _client.Log += Log; 
-    //         
-    //         var token = "/MTE4MDIwNzkxNzg4MjkzMzMwOA.G027oy.mtABZJxqUuF18GdOzsUK_C_wycF0sSxAU1ODlk";
-    //
-    //         await _client.LoginAsync(TokenType.Bot, token);
-    //         await _client.StartAsync();
-    //         
-    //         await Task.Delay(-1);
-    //     }
-    //
-    //     private void WorkWithFile()
-    //     {
-    //         var credentialsPath =
-    //             "Credentials.json";
-    //     }
-    //
-    //     private Task Log(LogMessage arg)
-    //     {
-    //         Console.WriteLine(arg);
-    //         return Task.CompletedTask;
-    //     }
-    //
-    //     private Task HandleCommandAsync(SocketMessage messageParam)
-    //     {
-    //         if (messageParam.Author.IsBot)
-    //             return Task.CompletedTask;
-    //         messageParam.Channel.SendMessageAsync(messageParam.Content);
-    //         return Task.CompletedTask;
-    //     }
-    // }
-
     public class Program
     {
-        private static void Main(string[] args)
+        private static void Main() => new Program().MainAsync().GetAwaiter().GetResult();
+        
+        private DiscordSocketClient _client;
+        private FileDownloaderBootstraper _fileDownloader;
+        private string _token = "MTE4MDIwNzkxNzg4MjkzMzMwOA.GrWS6Z.Mg-J5gBxCwwTI-QpCuAaeZ7Yt3PnT5oKJldgCg";
+    
+        private async Task MainAsync()
+        {
+            _fileDownloader = new FileDownloaderBootstraper();
+            _client = new DiscordSocketClient();
+            
+            _client.MessageReceived += HandleCommandAsync;
+            _client.Log += Log; 
+    
+            await _client.LoginAsync(TokenType.Bot, _token);
+            await _client.StartAsync();
+            
+            await Task.Delay(-1);
+        }
+    
+        private Task Log(LogMessage arg)
+        {
+            Console.WriteLine(arg);
+            return Task.CompletedTask;
+        }
+    
+        private Task HandleCommandAsync(SocketMessage messageParam)
+        {
+            if (messageParam.Author.IsBot)
+                return Task.CompletedTask;
+           
+            _fileDownloader.DownloadFile(ExtractLink(messageParam.Content));
+            messageParam.Channel.SendMessageAsync("Downloading");
+
+            return Task.CompletedTask;
+        }
+
+        private string ExtractLink(string content)
+        {
+            Match url = Regex.Match(content, @"http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?");
+            string finalUrl = url.ToString();
+
+            return finalUrl;
+        }
+    }
+
+    public class FileDownloaderBootstraper
+    {
+        public void DownloadFile(string linkToDownload)
         {
             var fileDownloader = new FileDownloader();
-            var linkToDownload = "https://drive.google.com/file/d/1e48SnRiRDn8HIVPuf_DTOO3HGPz8rM-L/view?usp=sharing";
             var filename = fileDownloader.GetFileName(linkToDownload);
-            var filePath = fileDownloader.CrateFileWithPath( @"C:\Users\blackmercy\Downloads", filename);
+            var filePath = fileDownloader.CrateFileWithPath( @"/Users/black_mercy/Downloads", filename);
             
             fileDownloader.DownloadProgressChanged += ( sender, e ) => Console.WriteLine( "Progress changed " + e.BytesReceived + " " + e.TotalBytesToReceive );
         
@@ -71,10 +75,10 @@ namespace SamustaiDiscordBot
                 else
                     Console.WriteLine( "Download completed" );
             };
-            
-            fileDownloader.DownloadFileAsync( 
-                "https://drive.google.com/file/d/1e48SnRiRDn8HIVPuf_DTOO3HGPz8rM-L/view?usp=sharing",
-                @"C:\Users\blackmercy\Videos\Choice Of Life Middle Ages 2\Choice Of Life Middle Ages 2 2023.10.20 - 12.39.55.01" );
+
+            fileDownloader.DownloadFileAsync(
+                linkToDownload,
+                @filePath);
 
             Console.ReadLine();
         }
